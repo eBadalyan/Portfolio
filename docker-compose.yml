@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: portfolio-db
+    restart: always
+    environment:
+      POSTGRES_USER: fastapiuser
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: fastapi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer:4.8.1
+    container_name: portfolio-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
