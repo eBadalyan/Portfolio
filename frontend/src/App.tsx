@@ -4,7 +4,6 @@ import ProjectList from './ProjectList';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Регистрируем плагин ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
 interface Project {
@@ -35,76 +34,86 @@ const App: React.FC = () => {
     fetchProjects();
   }, []);
 
-  // GSAP animations
   useLayoutEffect(() => {
-    // Hero Section text and button animation
-    gsap.fromTo(".hero-text", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power2.out" });
-    gsap.fromTo(".hero-button", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 0.6, ease: "back.out(1.7)" });
-
-    // --- ИСПРАВЛЕННАЯ АНИМАЦИЯ ФОНА ---
-    // Сначала устанавливаем начальное состояние
-    gsap.set(".hero-bg", { backgroundPositionX: "0%" });
-    // Затем создаем анимацию, которая будет работать при прокрутке
-    gsap.to(".hero-bg", {
-      backgroundPositionX: "100%",
+    // --- ИСПРАВЛЕННАЯ АНИМАЦИЯ ФОНА ВСЕЙ СТРАНИЦЫ ---
+    // Теперь фон будет плавно меняться с bg-gray-900 на bg-gray-800
+    gsap.to(".main-bg-wrapper", {
+      backgroundColor: "#374151", // Конечный цвет фона (bg-gray-800)
       ease: "none",
       scrollTrigger: {
-        trigger: ".hero-section",
+        trigger: "body",
         start: "top top",
-        end: "+=500", 
+        end: "+=3000", 
         scrub: true,
       }
     });
 
-    // About Section text animation (fade in on scroll)
-    gsap.fromTo(".about-text", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, stagger: 0.2, ease: "power2.out", scrollTrigger: {
-      trigger: ".about-section",
-      start: "top 75%",
-      toggleActions: "play none none none"
-    }});
+    // --- ИСПРАВЛЕННАЯ АНИМАЦИЯ ТЕКСТА ---
+    // Текст будет просто плавно появляться при входе секции в область видимости
+    gsap.fromTo(".about-text", { opacity: 0, y: 30 }, { 
+      opacity: 1, 
+      y: 0, 
+      duration: 1, 
+      stagger: 0.2, 
+      ease: "power2.out", 
+      scrollTrigger: {
+        trigger: ".about-section",
+        start: "top 75%",
+        toggleActions: "play none none none"
+      }
+    });
     
-    // Поэтапная анимация карточек проектов при прокрутке
+    // Анимации остальных элементов
+    gsap.fromTo(".hero-text", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power2.out" });
+    gsap.fromTo(".hero-button", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, delay: 0.6, ease: "back.out(1.7)" });
+
     gsap.utils.toArray(".project-card").forEach((card, index) => {
       const htmlCard = card as HTMLElement;
       const isOdd = index % 2 !== 0;
       const startX = isOdd ? 100 : -100;
-      
-      gsap.fromTo(htmlCard,
+
+      // Сначала отключаем hover
+      htmlCard.classList.add("pointer-events-none");
+
+      gsap.fromTo(
+        htmlCard,
         { x: startX, y: 100, opacity: 0 },
-        { x: 0, y: 0, opacity: 1, duration: 1.5, ease: "power2.out",
+        {
+          x: 0,
+          y: 0,
+          opacity: 1,
+          duration: 1.5,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: htmlCard,
             start: "top 85%",
-            toggleActions: "play none none none"
-          }
-        });
+            toggleActions: "play none none none",
+          },
+          onComplete: () => {
+            // Включаем hover обратно
+            htmlCard.classList.remove("pointer-events-none");
+          },
+        }
+      );
     });
+
 
   }, [projects]);
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-xl text-gray-200">Загрузка проектов...</div>;
+    return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-xl text-gray-200">Загрузка проектов...</div>;
   }
 
   if (error) {
-    return <div className="min-h-screen bg-gray-950 flex items-center justify-center text-xl text-red-500">
+    return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-xl text-red-500">
       <p className="text-gray-200">Не удалось загрузить проекты.</p>
     </div>;
   }
 
   return (
-    <div className="font-sans antialiased bg-gray-950 text-gray-200">
+    <div className="font-sans antialiased bg-gray-900 text-gray-200 overflow-x-hidden main-bg-wrapper">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-gray-950 overflow-hidden hero-section">
-        {/* Анимированный градиент фона */}
-        <div
-          className="absolute inset-0 z-0 hero-bg"
-          style={{
-            background: 'linear-gradient(270deg, #1f2937, #111827, #1f2937)',
-            backgroundSize: '200% 100%',
-          }}
-        ></div>
-        
+      <section className="relative h-screen flex items-center justify-center hero-section">
         <div className="relative z-10 text-center px-4">
           <h1 className="text-6xl md:text-8xl font-extrabold leading-none tracking-tight text-gray-200 mb-4 hero-text">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-200 to-gray-400">Ваше Имя</span>
@@ -119,7 +128,7 @@ const App: React.FC = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800 about-section shadow-inner">
+      <section className="py-20 about-section shadow-inner">
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <h2 className="text-4xl font-bold mb-6 about-text">Обо мне</h2>
           <p className="text-lg text-gray-400 leading-relaxed about-text">
@@ -129,7 +138,7 @@ const App: React.FC = () => {
       </section>
 
       {/* Projects Section */}
-      <section className="py-20 bg-gray-950 projects-section">
+      <section className="py-20 projects-section">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Мои проекты</h2>
           <ProjectList projects={projects} />

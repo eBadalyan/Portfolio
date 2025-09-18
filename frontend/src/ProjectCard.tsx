@@ -37,13 +37,18 @@ const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, i
   return (
     <a 
       href={project.url} 
-      className={`block group project-card max-w-lg md:max-w-2xl ${isOdd ? 'md:self-end' : 'md:self-start'}`}
+      className={`block project-card ${isOdd ? 'md:self-end' : 'md:self-start'}`}
     >
-      <div className="bg-gray-800 rounded-xl shadow-lg transition-transform duration-300 transform group-hover:-translate-y-2 group-hover:shadow-xl">
+      <div
+        className={`bg-gray-800 rounded-xl shadow-lg overflow-hidden 
+                    max-w-lg md:max-w-2xl w-full transition-[max-width] duration-500
+                    hover:max-w-full
+                    ${isOdd ? 'origin-right' : 'origin-left'}`}
+      >
         <ProjectImage imageUrl={project.image_url} />
-        <div className="p-6">
+        <div className="p-6 min-h-[165px] flex flex-col">
           <h3 className="text-xl font-semibold mb-2 text-gray-200">{project.title}</h3>
-          <p className="text-gray-400 leading-relaxed">{project.description}</p>
+          <p className="text-gray-400 leading-relaxed flex-grow">{project.description}</p>
         </div>
       </div>
     </a>

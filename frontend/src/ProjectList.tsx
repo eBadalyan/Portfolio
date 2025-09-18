@@ -15,7 +15,7 @@ interface ProjectListProps {
 
 const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-12">
       <div className="flex flex-col space-y-16">
         {projects.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">
