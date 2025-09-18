@@ -1,6 +1,6 @@
 import React from 'react';
+import ProjectCard from './ProjectCard';
 
-// Интерфейс для типизации данных проекта
 interface Project {
   id: number;
   title: string;
@@ -9,35 +9,21 @@ interface Project {
   image_url?: string;
 }
 
-// Теперь ProjectList получает список проектов в качестве пропса
 interface ProjectListProps {
   projects: Project[];
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col space-y-16">
         {projects.length === 0 ? (
           <p className="col-span-full text-center text-gray-500">
             Здесь пока нет проектов.
           </p>
         ) : (
-          projects.map(project => (
-            <div key={project.id} className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
-              <p className="text-gray-600">{project.description}</p>
-              {project.url && (
-                <a 
-                  href={project.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-blue-500 hover:underline mt-2 inline-block"
-                >
-                  Посмотреть проект
-                </a>
-              )}
-            </div>
+          projects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} />
           ))
         )}
       </div>
